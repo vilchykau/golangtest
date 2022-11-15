@@ -1,7 +1,6 @@
 package htmlparser
 
 import (
-	"log"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -19,26 +18,33 @@ func NewKufarParser(url string) *KufarParser {
 	return kf
 }
 
-func (kf *KufarParser) ParserPrice() float64 {
+func (kf *KufarParser) ParserPrice() (float64, error) {
+	priceString, err := kf.readPage()
+	if err != nil {
+		return 0, err
+	}
+
 	re, _ := regexp.Compile(`(\d+) р\.`)
-	res := re.FindAllStringSubmatch(kf.readPage(), 1)
+	res := re.FindAllStringSubmatch(priceString, 1)
 
-	price, _ := strconv.ParseFloat(res[0][1], 64)
+	price, err := strconv.ParseFloat(res[0][1], 64)
+	if err != nil {
+		return 0, err
+	}
 
-	return price
+	return price, nil
 }
 
-func (kf *KufarParser) readPage() string {
+func (kf *KufarParser) readPage() (string, error) {
 	resp, err := http.Get(kf.url)
 	if err != nil {
-		print(err)
-		return ""
+		return "", err
 	}
 	defer resp.Body.Close()
 	doc, err := goquery.NewDocumentFromReader(resp.Body)
 	if err != nil {
-		log.Fatal(err)
+		return "", err
 	}
 
-	return doc.Find(".styles_main__PU1v4").First().Text()
+	return doc.Find(".styles_main__PU1v4").First().Text(), nil
 }
