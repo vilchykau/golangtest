@@ -1,6 +1,7 @@
 package htmlparser
 
 import (
+	"errors"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -24,8 +25,21 @@ func (kf *KufarParser) ParserPrice() (float64, error) {
 		return 0, err
 	}
 
+	price, err := kf.parsePriceString(priceString)
+	if err != nil {
+		return 0, err
+	}
+
+	return price, nil
+}
+
+func (kf *KufarParser) parsePriceString(priceString string) (float64, error) {
 	re, _ := regexp.Compile(`(\d+) р\.`)
 	res := re.FindAllStringSubmatch(priceString, 1)
+
+	if len(res) < 1 || len(res[0]) < 2 {
+		return 0, errors.New("There is no price in the string")
+	}
 
 	price, err := strconv.ParseFloat(res[0][1], 64)
 	if err != nil {
