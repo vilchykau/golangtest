@@ -3,6 +3,8 @@ package htmlparser
 import (
 	"errors"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestHtmlParser(t *testing.T) {
@@ -21,22 +23,29 @@ func TestHtmlParser(t *testing.T) {
 			price:       0,
 			err:         errors.New("There is no price in the string"),
 		},
+		{
+			priceString: "123 %",
+			price:       0,
+			err:         errors.New("There is no price in the string"),
+		},
+		{
+			priceString: "-1 р.",
+			price:       0,
+			err:         errors.New("The price can't be negative"),
+		},
 	}
 
 	kp := &KufarParser{}
 
 	for _, testData := range tests {
 		price, err := kp.parsePriceString(testData.priceString)
-
-		if price != testData.price {
-			t.Errorf("Wrong string transformation(priceString: %v)\n "+
-				"price(got vs expect): %v  vs %v;\n"+
-				testData.priceString, price, testData.price)
-		}
-		if !(err == nil && testData.err == nil) || err.Error() != testData.err.Error() {
-			t.Errorf("Wrong string transformation(priceString: %v)\n "+
-				"error(got vs expect): %v  vs  %v)",
-				testData.priceString, err, testData.err)
-		}
+		t.Run("Kufar regex parser", func(t *testing.T) {
+			require.Equal(t, price, testData.price)
+			if testData.err == nil {
+				require.NoError(t, err)
+			} else {
+				require.EqualError(t, err, testData.err.Error())
+			}
+		})
 	}
 }
