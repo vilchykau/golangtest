@@ -9,6 +9,11 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
+var (
+	ErrNullPrice     = errors.New("there is no price in the string")
+	ErrNegativePrice = errors.New("the price can't be negative")
+)
+
 type KufarParser struct {
 	url string
 }
@@ -38,7 +43,7 @@ func (kf *KufarParser) parsePriceString(priceString string) (float64, error) {
 	res := re.FindAllStringSubmatch(priceString, 1)
 
 	if len(res) < 1 || len(res[0]) < 2 {
-		return 0, errors.New("There is no price in the string")
+		return 0, ErrNullPrice
 	}
 
 	price, err := strconv.ParseFloat(res[0][1], 64)
@@ -47,7 +52,7 @@ func (kf *KufarParser) parsePriceString(priceString string) (float64, error) {
 	}
 
 	if price < 0 {
-		return 0, errors.New("The price can't be negative")
+		return 0, ErrNegativePrice
 	}
 
 	return price, nil
