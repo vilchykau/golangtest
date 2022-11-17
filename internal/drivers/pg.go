@@ -50,5 +50,5 @@ func (d *PgDriver) GetDb() *sqlx.DB {
 }
 
 func (d *PgDriver) MustBegin() Tx {
-	return NewPgTx(d.db.MustBegin())
+	return d.db.MustBegin()
 }
