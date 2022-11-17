@@ -1,0 +1,40 @@
+definitions:
+  subs.AddSubcriptionBody:
+    properties:
+      email:
+        example: Subcriber@email.com
+        type: string
+      url:
+        example: https:https://kufar.by
+        type: string
+    required:
+    - email
+    - url
+    type: object
+info:
+  contact: {}
+paths:
+  /api/v1/subs/addsubs:
+    post:
+      consumes:
+      - '*/*'
+      description: add Subcription to email.
+      parameters:
+      - description: The body to create a thing
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/subs.AddSubcriptionBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: add Subcription to email.
+      tags:
+      - api/v1/subs/
+swagger: "2.0"

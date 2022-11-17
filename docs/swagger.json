@@ -1,0 +1,62 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "contact": {}
+    },
+    "paths": {
+        "/api/v1/subs/addsubs": {
+            "post": {
+                "description": "add Subcription to email.",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "api/v1/subs/"
+                ],
+                "summary": "add Subcription to email.",
+                "parameters": [
+                    {
+                        "description": "The body to create a thing",
+                        "name": "Body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/subs.AddSubcriptionBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "subs.AddSubcriptionBody": {
+            "type": "object",
+            "required": [
+                "email",
+                "url"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "Subcriber@email.com"
+                },
+                "url": {
+                    "type": "string",
+                    "example": "https:https://kufar.by"
+                }
+            }
+        }
+    }
+}
