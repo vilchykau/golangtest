@@ -18,9 +18,6 @@ type App struct {
 func (a *App) Start() {
 	gin.SetMode(gin.DebugMode)
 	r := gin.Default()
-	// driver :=
-	// 	drivers.NewPgDriver(drivers.PgConfig{DnsString: "User ID=habrpguser;Password=pgpwd4habr;Host=127.0.0.1;Port=5432;Database=habrdb;Pooling=true;Min Pool Size=0;Max Pool Size=100;Connection Lifetime=0;"})
-	// driver.Connect(ctx)
 
 	r.Use(middleware.CorsMiddleware())
 	r.Use(middleware.Db())
