@@ -6,7 +6,7 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/vilchykau/golangtest/api"
 	_ "github.com/vilchykau/golangtest/docs"
-	"github.com/vilchykau/golangtest/middleware"
+	"github.com/vilchykau/golangtest/internal/middleware"
 )
 
 type OnShutdownExec func()
