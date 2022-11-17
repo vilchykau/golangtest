@@ -1,15 +1,11 @@
 package subs
 
 import (
-	"errors"
 	"net/http"
 	"net/mail"
 
 	"github.com/gin-gonic/gin"
-	"github.com/vilchykau/golangtest/internal/db/price"
-	"github.com/vilchykau/golangtest/internal/db/subcription"
-	"github.com/vilchykau/golangtest/internal/drivers"
-	"github.com/vilchykau/golangtest/pkg/htmlparser"
+	"github.com/vilchykau/golangtest/internal/controller"
 )
 
 type AddSubcriptionBody struct {
@@ -35,29 +31,8 @@ func AddSubcription(g *gin.Context) {
 		return
 	}
 
-	db, _ := drivers.UnpackDatabase(g)
-
-	parser := htmlparser.NewKufarParser(body.Url)
-	priceV, err := parser.ParserPrice()
-	if err != nil {
-		g.JSON(http.StatusInternalServerError, "Wrong address")
-		return
-	}
-
-	err = price.NewPrice(priceV, body.Url).InsertPrice(db)
-	if !errors.Is(err, price.ErrPriceAlreadyExists) {
-		g.JSON(http.StatusInternalServerError, "Internal Error!")
-		return
-	}
-
-	err = subcription.NewSubcription(body.Email, body.Url).Insert(db)
-	if err == nil {
-		g.JSON(http.StatusOK, "OK")
-	} else if errors.Is(err, subcription.ErrSubcriptionAlreadyExists) {
-		g.JSON(http.StatusOK, "Already")
-	} else {
-		g.JSON(http.StatusInternalServerError, "Internal Error!")
-	}
+	code, msg := controller.AddSubcription(body.Email, body.Url)
+	g.JSON(code, msg)
 }
 
 func InitGroup(g *gin.RouterGroup) {

@@ -1,10 +1,15 @@
-package subcription
+package store
 
 import (
 	"errors"
 
 	"github.com/vilchykau/golangtest/internal/drivers"
 )
+
+type Subcription struct {
+	Email *string `db:"EMAIL" json:"email"`
+	Url   *string `db:"URL" json:"URL"`
+}
 
 var (
 	ErrSubcriptionAlreadyExists = errors.New("pq: duplicate key value violates unique constraint \"t_subcription_email_price_id_key\"")

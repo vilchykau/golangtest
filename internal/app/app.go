@@ -4,8 +4,8 @@ import (
 	"github.com/gin-gonic/gin"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-	"github.com/vilchykau/golangtest/api"
 	_ "github.com/vilchykau/golangtest/docs"
+	"github.com/vilchykau/golangtest/internal/api"
 	"github.com/vilchykau/golangtest/internal/middleware"
 )
 
@@ -20,7 +20,6 @@ func (a *App) Start() {
 	r := gin.Default()
 
 	r.Use(middleware.CorsMiddleware())
-	r.Use(middleware.Db())
 	api.InitGroups(r)
 	r.GET("/docs/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 

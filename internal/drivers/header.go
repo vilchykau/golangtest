@@ -1,5 +1,8 @@
 package drivers
 
+//go:generate mockgen -destination=mocks/internal/drivers/database_mock.go -package=mocks "github.com/vilchykau/golangtest/internal/drivers" Database
+//go:generate mockgen -destination=mocks/internal/drivers/tx_mock.go -package=mocks "github.com/vilchykau/golangtest/internal/drivers" Tx
+
 import (
 	"database/sql"
 

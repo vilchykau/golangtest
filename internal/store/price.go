@@ -1,12 +1,18 @@
-package price
+package store
 
 import (
 	"errors"
 
 	"github.com/jmoiron/sqlx"
-	"github.com/vilchykau/golangtest/internal/comerror"
 	"github.com/vilchykau/golangtest/internal/drivers"
+	comerror "github.com/vilchykau/golangtest/internal/error"
 )
+
+type Price struct {
+	PriceID *int64   `db:"PRICE_ID" json:"price_id"`
+	Url     *string  `db:"URL" json:"url"`
+	Price   *float64 `db:"PRICE" json:"price"`
+}
 
 var (
 	ErrPriceAlreadyExists = errors.New("pq: duplicate key value violates unique constraint \"t_price_url_key\"")
