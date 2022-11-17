@@ -1,6 +1,7 @@
 package subs
 
 import (
+	"errors"
 	"net/http"
 	"net/mail"
 
@@ -37,12 +38,26 @@ func AddSubcription(g *gin.Context) {
 	db, _ := drivers.UnpackDatabase(g)
 
 	parser := htmlparser.NewKufarParser(body.Url)
-	priceV, _ := parser.ParserPrice()
-	price.NewPrice(priceV, body.Url).InsertPrice(db)
+	priceV, err := parser.ParserPrice()
+	if err != nil {
+		g.JSON(http.StatusInternalServerError, "Wrong address")
+		return
+	}
 
-	subcription.NewSubcription(body.Email, body.Url).Insert(db)
+	err = price.NewPrice(priceV, body.Url).InsertPrice(db)
+	if !errors.Is(err, price.ErrPriceAlreadyExists) {
+		g.JSON(http.StatusInternalServerError, "Internal Error!")
+		return
+	}
 
-	g.JSON(http.StatusOK, body.Email)
+	err = subcription.NewSubcription(body.Email, body.Url).Insert(db)
+	if err == nil {
+		g.JSON(http.StatusOK, "OK")
+	} else if errors.Is(err, subcription.ErrSubcriptionAlreadyExists) {
+		g.JSON(http.StatusOK, "Already")
+	} else {
+		g.JSON(http.StatusInternalServerError, "Internal Error!")
+	}
 }
 
 func InitGroup(g *gin.RouterGroup) {

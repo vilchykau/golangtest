@@ -1,6 +1,14 @@
 package subcription
 
-import "github.com/vilchykau/golangtest/internal/drivers"
+import (
+	"errors"
+
+	"github.com/vilchykau/golangtest/internal/drivers"
+)
+
+var (
+	ErrSubcriptionAlreadyExists = errors.New("pq: duplicate key value violates unique constraint \"t_subcription_email_price_id_key\"")
+)
 
 func NewSubcription(email string, url string) *Subcription {
 	return &Subcription{
@@ -23,7 +31,9 @@ func (s *Subcription) Insert(db drivers.Database) error {
 	`, s)
 	tx.Commit()
 
-	if err != nil {
+	if err != nil && err.Error() == ErrSubcriptionAlreadyExists.Error() {
+		return ErrSubcriptionAlreadyExists
+	} else if err != nil {
 		return err
 	}
 

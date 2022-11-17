@@ -1,9 +1,15 @@
 package price
 
 import (
+	"errors"
+
 	"github.com/jmoiron/sqlx"
 	"github.com/vilchykau/golangtest/internal/comerror"
 	"github.com/vilchykau/golangtest/internal/drivers"
+)
+
+var (
+	ErrPriceAlreadyExists = errors.New("pq: duplicate key value violates unique constraint \"t_price_url_key\"")
 )
 
 func NewPrice(price float64, url string) *Price {
@@ -32,9 +38,12 @@ func (p *Price) InsertPrice(db drivers.Database) error {
 	}
 	tx.Commit()
 
-	if err != nil {
+	if err != nil && err.Error() == ErrPriceAlreadyExists.Error() {
+		return ErrPriceAlreadyExists
+	} else if err != nil {
 		return err
 	}
+
 	defer res.Close()
 
 	if !res.Next() {
