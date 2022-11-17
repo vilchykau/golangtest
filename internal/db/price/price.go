@@ -1,9 +1,9 @@
 package price
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
 	"github.com/vilchykau/golangtest/internal/comerror"
+	"github.com/vilchykau/golangtest/internal/drivers"
 )
 
 func NewPrice(price float64, url string) *Price {
@@ -13,15 +13,10 @@ func NewPrice(price float64, url string) *Price {
 	return p
 }
 
-func (p *Price) InsertPrice(ctx *gin.Context) error {
+func (p *Price) InsertPrice(db drivers.Database) error {
 	var res *sqlx.Rows
 	var err error
 
-	var dbRaw, ok = ctx.Get("DB")
-	if !ok {
-		return comerror.ErrDatabaseNotInit
-	}
-	db := dbRaw.(*sqlx.DB)
 	tx := db.MustBegin()
 
 	if p.PriceID == nil {

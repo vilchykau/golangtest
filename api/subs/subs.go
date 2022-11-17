@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/vilchykau/golangtest/internal/db/price"
 	"github.com/vilchykau/golangtest/internal/db/subcription"
+	"github.com/vilchykau/golangtest/internal/drivers"
 	"github.com/vilchykau/golangtest/pkg/htmlparser"
 )
 
@@ -33,11 +34,13 @@ func AddSubcription(g *gin.Context) {
 		return
 	}
 
+	db, _ := drivers.UnpackDatabase(g)
+
 	parser := htmlparser.NewKufarParser(body.Url)
 	priceV, _ := parser.ParserPrice()
-	price.NewPrice(priceV, body.Url).InsertPrice(g)
+	price.NewPrice(priceV, body.Url).InsertPrice(db)
 
-	subcription.NewSubcription(body.Email, body.Url).Insert(g)
+	subcription.NewSubcription(body.Email, body.Url).Insert(db)
 
 	g.JSON(http.StatusOK, body.Email)
 }

@@ -19,7 +19,7 @@ func Db() gin.HandlerFunc {
 			fmt.Println(err.Error())
 		}
 
-		c.Set("DB", driver.GetDb())
+		c.Set("DB", driver)
 		c.Next()
 	}
 }

@@ -1,10 +1,6 @@
 package subcription
 
-import (
-	"github.com/gin-gonic/gin"
-	"github.com/jmoiron/sqlx"
-	"github.com/vilchykau/golangtest/internal/comerror"
-)
+import "github.com/vilchykau/golangtest/internal/drivers"
 
 func NewSubcription(email string, url string) *Subcription {
 	return &Subcription{
@@ -13,16 +9,10 @@ func NewSubcription(email string, url string) *Subcription {
 	}
 }
 
-func (s *Subcription) Insert(ctx *gin.Context) error {
+func (s *Subcription) Insert(db drivers.Database) error {
 	//var res sql.Result
 	var err error
 
-	var dbRaw, ok = ctx.Get("DB")
-	if !ok {
-		return comerror.ErrDatabaseNotInit
-	}
-
-	db := dbRaw.(*sqlx.DB)
 	tx := db.MustBegin()
 
 	_, err = tx.NamedExec(`

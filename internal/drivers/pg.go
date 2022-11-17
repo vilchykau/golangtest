@@ -20,7 +20,7 @@ type PgDriver struct {
 	db     *sqlx.DB
 }
 
-func NewPgDriver(config PgConfig) *PgDriver {
+func NewPgDriver(config PgConfig) Database {
 	return &PgDriver{
 		config: config,
 	}
@@ -47,4 +47,8 @@ func (d *PgDriver) Close() error {
 
 func (d *PgDriver) GetDb() *sqlx.DB {
 	return d.db
+}
+
+func (d *PgDriver) MustBegin() Tx {
+	return NewPgTx(d.db.MustBegin())
 }
