@@ -1,12 +1,14 @@
 package app
 
 import (
-	"github.com/gin-gonic/gin"
-	swaggerfiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
-	_ "github.com/vilchykau/golangtest/docs"
+	"fmt"
+	"log"
+	"net/http"
+	"os"
+
+	"github.com/gorilla/handlers"
+	"github.com/gorilla/mux"
 	"github.com/vilchykau/golangtest/internal/api"
-	"github.com/vilchykau/golangtest/internal/middleware"
 )
 
 type OnShutdownExec func()
@@ -16,14 +18,18 @@ type App struct {
 }
 
 func (a *App) Start() {
-	gin.SetMode(gin.DebugMode)
-	r := gin.Default()
+	mux := mux.NewRouter()
 
-	r.Use(middleware.CorsMiddleware())
-	api.InitGroups(r)
-	r.GET("/docs/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+	api.InitRoutes(mux)
 
-	r.Run(":8001")
+	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With"})
+	originsOk := handlers.AllowedOrigins([]string{"localhost:8080", "127.0.0.1:5432"})
+	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
+
+	cors := handlers.CORS(originsOk, headersOk, methodsOk)
+
+	fmt.Println("Server is listening...")
+	log.Fatal(http.ListenAndServe(":8080"+os.Getenv("PORT"), cors(mux)))
 }
 
 func (a *App) AddOnShutdown(shut OnShutdownExec) {

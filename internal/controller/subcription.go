@@ -2,6 +2,7 @@ package controller
 
 import (
 	"errors"
+	"log"
 	"net/http"
 
 	"github.com/vilchykau/golangtest/internal/store"
@@ -20,6 +21,7 @@ func AddSubcription(email string, url string) (int, string) {
 
 	err = store.NewPrice(priceV, url).InsertPrice(db)
 	if !errors.Is(err, store.ErrPriceAlreadyExists) {
+		log.Fatal(err)
 		return http.StatusInternalServerError, "Internal Error!"
 	}
 
@@ -29,6 +31,7 @@ func AddSubcription(email string, url string) (int, string) {
 	} else if errors.Is(err, store.ErrSubcriptionAlreadyExists) {
 		return http.StatusOK, "Already"
 	} else {
+		log.Fatal(err)
 		return http.StatusInternalServerError, "Internal Error!"
 	}
 }

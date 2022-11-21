@@ -1,15 +1,9 @@
 package api
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/vilchykau/golangtest/internal/api/subs"
+	"github.com/gorilla/mux"
 )
 
-func initSubs(engine *gin.Engine) {
-	g := engine.Group("/api/v1/subs/")
-	subs.InitGroup(g)
-}
-
-func InitGroups(engine *gin.Engine) {
-	initSubs(engine)
+func InitRoutes(mux *mux.Router) {
+	mux.HandleFunc("/subs", subsHandler)
 }
